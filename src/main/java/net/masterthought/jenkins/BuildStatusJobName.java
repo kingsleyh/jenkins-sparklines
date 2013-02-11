@@ -1,10 +1,15 @@
 package net.masterthought.jenkins;
 
-public class BuildStatusBasic {
+public class BuildStatusJobName {
 
-    public static String BuildStatus(String buildStatus, String pluginUrlPath, String jobPath) {
+    public static String BuildStatus(String buildStatus, String pluginUrlPath, String jobPath, String jobName) {
 
         BuildStatus status = BuildStatus.fromStatus(buildStatus);
+        int jobNameLength = jobName.length();
+        double CHAR_LENGTH = 7.5;
+        double itemLength = (jobNameLength * CHAR_LENGTH) + 5;
+        int statusLength = 50;
+        double canvasLength = itemLength + statusLength + 5;
 
         String code = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -15,24 +20,24 @@ public class BuildStatusBasic {
                 "<script type=\"application/processing\" data-processing-target=\"build-status\">\n" +
                 "void setup()\n" +
                 "{\n" +
-                "size(120, 19);\n" +
+                "size("+ canvasLength +", 19);\n" +
                 "background(#FFFFFF);\n" +
                 "stroke(#424242);\n" +
                 "fill(#424242);\n" +
-                "rect(0, 3, 79, 15, 5, 0, 0, 5);\n" +
+                "rect(0, 3, " + (itemLength + 5) + ", 15, 5, 0, 0, 5);\n" +
                 "\n" +
                 "font = loadFont(\"arial\"); \n" +
                 "textFont(font); \n" +
                 "\n" +
                 "fill(#FFFFFF);\n" +
-                "text(\"build status\", 4, 15);\n" +
+                "text(\"" + jobName + "\", 4, 15);\n" +
                 "\n" +
                 "stroke(" + status.getColour() + ");\n" +
                 "fill(" + status.getColour() + ");\n" +
-                "rect(69,3,50,15, 0, 5, 5, 0);\n" +
+                "rect(" + itemLength + ",3,50,15, 0, 5, 5, 0);\n" +
                 "\n" +
                 "fill(#FFFFFF);\n" +
-                "text(\"" + status.getText() + "\", 73, 15);\n" +
+                "text(\"" + status.getText() + "\", " + (itemLength + 5)+ ", 15);\n" +
                 "\n" +
                 "}\n" +
                 "void mousePressed() {"+

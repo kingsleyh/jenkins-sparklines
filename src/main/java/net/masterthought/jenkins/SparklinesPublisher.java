@@ -64,11 +64,13 @@ public class SparklinesPublisher extends Recorder {
             targetBuildDirectory.mkdirs();
         }
 
-        File page = new File(targetBuildDirectory, "build-status.html");
+        File buildStatusPage = new File(targetBuildDirectory, "build-status.html");
+        File jobStatusSpark = new File(targetBuildDirectory, "job-status.html");
         try {
-            listener.getLogger().println("[SparklinesPublisher] Result is: " + build.getResult().toString());
+            listener.getLogger().println("[SparklinesPublisher] Result is: " + build.getProject().getName());
 
-            writeFile(page, BuildStatusBasic.BuildStatus(build.getResult().toString(),pluginUrlPath));
+            writeFile(buildStatusPage, BuildStatusBasic.BuildStatus(build.getResult().toString(),pluginUrlPath,build.getUrl()));
+            writeFile(jobStatusSpark, BuildStatusJobName.BuildStatus(build.getResult().toString(),pluginUrlPath,build.getUrl(),build.getProject().getName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
