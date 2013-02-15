@@ -30,7 +30,7 @@ public abstract class SparklinesBaseAction implements Action {
 
     public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
         DirectoryBrowserSupport dbs = new DirectoryBrowserSupport(this, new FilePath(this.dir()), this.getTitle(), "graph.gif", false);
-        dbs.setIndexFileName("build-status.html");
+        dbs.setIndexFileName("overview.html");
         dbs.generateResponse(req, rsp, this);
     }
 

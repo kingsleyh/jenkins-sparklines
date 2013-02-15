@@ -12,7 +12,13 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
+import net.masterthought.sparklines.BuildStatusBasic;
+import net.masterthought.sparklines.BuildStatusJobName;
+import net.masterthought.sparklines.OverviewPage;
+import net.masterthought.sparklines.SparklinesGenerator;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -22,6 +28,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Properties;
 
 public class SparklinesPublisher extends Recorder {
 
@@ -32,45 +39,25 @@ public class SparklinesPublisher extends Recorder {
         this.pluginUrlPath = pluginUrlPath;
     }
 
-    private String[] findJsonFiles(File targetDirectory) {
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setIncludes(new String[]{"**/*.json"});
-        scanner.setBasedir(targetDirectory);
-        scanner.scan();
-        return scanner.getIncludedFiles();
-    }
-
-    private void writeFile(File file, String content) throws Exception {
-        Writer writer = new FileWriter(file);
-        writer.write(content);
-        writer.flush();
-        writer.close();
-    }
-
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener)
             throws IOException, InterruptedException {
 
-
-        // Make a location to store 2 pages - 1 page of sparklines and 1 page of iframe snippets pointing back to page 1
-
-        // Generate the sparklines page based on build result
-
-        // Generate the snippets page
-
         listener.getLogger().println("[SparklinesPublisher] Generating Sparklines Build Result Page ...");
+
         File targetBuildDirectory = new File(build.getRootDir(), "jenkins-sparklines");
         if (!targetBuildDirectory.exists()) {
             targetBuildDirectory.mkdirs();
         }
 
-        File buildStatusPage = new File(targetBuildDirectory, "build-status.html");
-        File jobStatusSpark = new File(targetBuildDirectory, "job-status.html");
         try {
             listener.getLogger().println("[SparklinesPublisher] Result is: " + build.getProject().getName());
 
-            writeFile(buildStatusPage, BuildStatusBasic.BuildStatus(build.getResult().toString(),pluginUrlPath,build.getUrl()));
-            writeFile(jobStatusSpark, BuildStatusJobName.BuildStatus(build.getResult().toString(),pluginUrlPath,build.getUrl(),build.getProject().getName()));
+            SparklinesGenerator sparklinesGenerator = new SparklinesGenerator(build.getResult().toString(),pluginUrlPath,build.getUrl(),targetBuildDirectory,build.getProject().getDisplayName());
+            sparklinesGenerator.generateBuildStatusBasic();
+            sparklinesGenerator.generateBuildStatusJobName();
+            sparklinesGenerator.generateOverview();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,14 +65,6 @@ public class SparklinesPublisher extends Recorder {
         build.addAction(new SparklinesBuildAction(build));
         return true;
     }
-
-//    private List<String> fullPathToJsonFiles(String[] jsonFiles, File targetBuildDirectory) {
-//        List<String> fullPathList = new ArrayList<String>();
-//        for (String file : jsonFiles) {
-//            fullPathList.add(new File(targetBuildDirectory, file).getAbsolutePath());
-//        }
-//        return fullPathList;
-//    }
 
     @Override
     public Action getProjectAction(AbstractProject<?, ?> project) {
