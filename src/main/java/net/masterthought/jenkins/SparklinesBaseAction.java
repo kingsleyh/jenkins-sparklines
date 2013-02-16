@@ -25,7 +25,7 @@ public abstract class SparklinesBaseAction implements Action {
     }
     
     public String getIconFileName(){
-            return "/plugin/jenkins-sparklines/cuke.png";
+            return "/plugin/jenkins-sparklines/sparklines.png";
     }
 
     public void doDynamic(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {

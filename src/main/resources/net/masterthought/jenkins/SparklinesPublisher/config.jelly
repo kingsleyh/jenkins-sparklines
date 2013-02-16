@@ -9,10 +9,11 @@
     Creates a text field that shows the value of the "name" property.
     When submitted, it will be passed to the corresponding constructor parameter.
   -->
-    <f:entry title="Plugin Url Path" field="pluginUrlPath" description="The path to the jenkins user content url e.g. http://host:port[/jenkins/]plugin - leave empty if jenkins url root is host:port">
+    <f:advanced>
+      <f:entry title="Plugin Url Path" field="pluginUrlPath" description="The path to the jenkins user content url e.g. http://host:port[/jenkins/]plugin - leave empty if jenkins url root is host:port">
         <f:textbox />
-  </f:entry>
-
+      </f:entry>
+    </f:advanced>
 
 </j:jelly>
 
